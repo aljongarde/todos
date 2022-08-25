@@ -3,16 +3,16 @@ import { BaseDataSourceOptions } from 'typeorm/data-source/BaseDataSourceOptions
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
 import { AuthenticatedGuard } from './auth/authenticated.guard';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 
 @Controller()
 export class AppController {
   constructor(private readonly authService: AuthService) {}
 
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('protected')
   getHello(@Request() req): string {
-    
     return req.user; // TODO: require an Bearer token
   }
 
@@ -21,7 +21,6 @@ export class AppController {
   login(@Body() req): any {
     //return {msg: 'Logged in!'}; // TODO: return JWT access token
     //return req.user;
-    
     return this.authService.login(req);
   }
 
