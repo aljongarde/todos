@@ -20,7 +20,8 @@ export class UserService {
     }
 
     findUser(email:string): Promise<UserEntity>{
-      return this.userRepository.findOneBy({email});
+      const response = this.userRepository.findOneBy({email});
+      return response;
     }
 
 

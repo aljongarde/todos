@@ -16,13 +16,6 @@ export class AppController {
     return req.user; // TODO: require an Bearer token
   }
 
-  //@UseGuards(LocalAuthGuard)
-  @Post('login')
-  login(@Body() req): any {
-    //return {msg: 'Logged in!'}; // TODO: return JWT access token
-    //return req.user;
-    return this.authService.login(req);
-  }
 
 }
 

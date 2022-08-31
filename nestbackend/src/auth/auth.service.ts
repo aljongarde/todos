@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
@@ -14,40 +14,44 @@ export class AuthService {
 
     async validateUser(email: string, password: string): Promise<any> {
         const user = await this.usersService.findUser(email);
-
-        if (user && user.password === password){
-            const { password, email, ...rest} = user;
-            return rest;
+        //console.log(user, email, password);
+        
+        if (user && user.password == password){
+            return true;
         }
         else{
-            return null;
+            return false;
         }
         
     }
 
-    async login(user: any) {
+    async loginUser(userdata: any) {
 
-        const userdetails = this.validateUser(user.email, user.password);
+        const userdetails = await this.usersService.findUser(userdata.email);
+        const isMatched = await this.validateUser(userdata.email,userdata.password);
         
         if(userdetails){
-            const userdetails = await this.dataSource
-            .getRepository(UserEntity)
-            .createQueryBuilder("users")
-            .where("users.email = :email", { email: user.email })
-            .getOne();
-            //const payload = { user: userdetails };
-            const payload = { user: userdetails };
-            return {
-                access_token: this.jwtService.sign(payload),
-                user: userdetails
-            };
+
+            if(isMatched){
+                
+                const payload = { user: userdetails };
+                
+                return {
+                    access_token: this.jwtService.sign(payload),
+                    user: userdetails,
+                    status: HttpStatus.FOUND
+                };
+
+            }
+            else{
+                return new HttpException('Password do not match', HttpStatus.NOT_FOUND);
+            }
+
         }
-        /*
-        const payload = { name: user.email, sub: user.user_id};
-        return {
-            access_token: this.jwtService.sign(payload)
-        };
-        */
+        else{
+            return new HttpException('User not found', HttpStatus.NOT_FOUND);
+        }
+        
     }
 
 }

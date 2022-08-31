@@ -7,11 +7,16 @@ import { UserEntity } from './user/user.entity';
 import { UserService } from './user/user.service';
 import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
+import { TodoModule } from './todo/todo.module';
+import { TodoEntity } from './todo/todo.entity';
+import { TodoController } from './todo/todo.controller';
+import { TodoService } from './todo/todo.service';
+import { AuthController } from './auth/auth.controller';
 
 @Module({
   imports: [
     UserModule,
-    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([UserEntity,TodoEntity]),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
@@ -19,12 +24,13 @@ import { AppController } from './app.controller';
       username: 'root',
       password: '',
       database: 'todoapp',
-      entities: [UserEntity],
+      entities: [UserEntity,TodoEntity],
       synchronize: false,
     }),
-    AuthModule
+    AuthModule,
+    TodoModule
   ],
-  controllers: [UserController,AppController],
-  providers: [AppService, UserService],
+  controllers: [UserController,AppController,TodoController,AuthController],
+  providers: [AppService, UserService,TodoService],
 })
 export class AppModule {}
